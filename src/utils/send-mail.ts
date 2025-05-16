@@ -69,4 +69,34 @@ const sendEndoresementMail = (data: any) => {
   const info: any = transporter.sendMail(mail);
 }
 
-export { sendMailToHiringManager, sendEndoresementMail };
+const sendEndoresementFeedbackMail = (data: any) => {
+
+  const job_link = `${env.STAGING_URL}/jobs/${data.a_job_id}`;
+  const email_template_signature = data.email_template_signature ? data.email_template_signature : '';
+
+  const url = path.join(__dirname, '../content/endorsement_feedback_mail.html');
+
+  let html = fs.readFileSync(url, 'utf8');
+  html = html.replace(/{applicant_firstName}/g, data.p_first_name);
+  html = html.replace(/{endorser_firstName}/g, `${data.e_first_name}`);
+  html = html.replace(/{endorser_lastName}/g, `${data.e_last_name}`);
+  html = html.replace(/{job_title}/g, `${data.j_title}`);
+  html = html.replace(/{job_id}/g, `${data.j_id}`);
+  html = html.replace(/{hiringManager_firstName}/g, `${data.hm_first_name}`);
+  html = html.replace(/{hiringManager_lastName}/g, `${data.hm_last_name}`);
+  html = html.replace(/{hiringManager_user_emailAddress}/g, data.u_email_address);
+  html = html.replace(/{tenant_subdomain}/g, data.t_subdomain);
+  html = html.replace(/{company_icon}/g, data.company_logo);
+  html = html.replace(/{job_link}/g, job_link);
+  html = html.replace(/{email_template_signature}/g, email_template_signature);
+
+  const mail = {
+    to: data.endorser_email,
+    from: "ReturnOnTalent <hello@returnontalent.io>",
+    subject: "Welcome to ReturnOnTalent",
+    html
+  };
+  transporter.sendMail(mail);
+}
+
+export { sendMailToHiringManager, sendEndoresementMail, sendEndoresementFeedbackMail };

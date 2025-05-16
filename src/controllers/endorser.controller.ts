@@ -6,7 +6,7 @@ import { User } from "../models/user.model";
 import { UserRole } from "../models/user-role.model";
 import { sequelize } from "../config/database";
 import env from "../utils/validateEnv";
-import { sendEndoresementMail } from "../utils/send-mail";
+import { sendEndoresementFeedbackMail, sendEndoresementMail } from "../utils/send-mail";
 
 type Bucket = "STAGING" | "DEVELOP" | "PRODUCTION";
 
@@ -638,4 +638,145 @@ export class EndorserController extends HttpStatus {
       }
     }
   };
+
+  public sendEndorsementFeedbackEmail = async (req: Request, res: Response) => {
+    try {
+      const token = req.query.token;
+
+      const endorserQuery = `
+     SELECT
+      -- Endorsement Email Token
+      et.id AS et_id,
+      et.version AS et_version,
+      et.date_created AS et_date_created,
+      et.last_updated AS et_last_updated,
+      et.token AS et_token,
+      et.status AS et_status,
+      et.endorser_id AS et_endorser_id,
+      et.expiration_date AS et_expiration_date,
+
+      -- Endorser
+      e.id AS e_id,
+      e.version AS e_version,
+      e.date_created AS e_date_created,
+      e.linked_in_profile AS e_linked_in_profile,
+      e.first_name AS e_first_name,
+      e.last_name AS e_last_name,
+      e.mobile_phone AS e_mobile_phone,
+      e.last_updated AS e_last_updated,
+      e.application_id AS e_application_id,
+      e.gender AS e_gender,
+      e.is_email_sent AS e_is_email_sent,
+      e.relationship AS e_relationship,
+      e.current_company AS e_current_company,
+      e.department AS e_department,
+      e.email_address AS e_email_address,
+      e.end_year_of_working AS e_end_year_of_working,
+      e.personal_note AS e_personal_note,
+      e.start_year_of_working AS e_start_year_of_working,
+      e.status AS e_status,
+      e.current_position AS e_current_position,
+      e.last_name AS e_last_name,
+      e.company_together AS e_company_together,
+
+      -- Application
+      a.id AS a_id,
+      a.version AS a_version,
+      a.is_short_listed AS a_is_short_listed,
+      a.date_created AS a_date_created,
+      a.job_id AS a_job_id,
+      a.last_updated AS a_last_updated,
+      a.applicant_id AS a_applicant_id,
+      a.achievements AS a_achievements,
+      a.excels AS a_excels,
+      a.date_applied AS a_date_applied,
+      a.competencies_id AS a_competencies_id,
+      a.push_factors AS a_push_factors,
+      a.status AS a_status,
+      a.pull_factors AS a_pull_factors,
+      a.resume_id AS a_resume_id,
+
+      -- Profile
+      p.id AS p_id,
+      p.version AS p_version,
+      p.date_created AS p_date_created,
+      p.first_name AS p_first_name,
+      p.last_updated AS p_last_updated,
+      p.middle_name AS p_middle_name,
+      p.gender AS p_gender,
+      p.phone_number AS p_phone_number,
+      p.linked_in_url AS p_linked_in_url,
+      p.address_id AS p_address_id,
+      p.mobile_number AS p_mobile_number,
+      p.user_id AS p_user_id,
+      p.nationality AS p_nationality,
+      p.status AS p_status,
+      p.birth_date AS p_birth_date,
+      p.last_name AS p_last_name,
+      p.picture_url AS p_picture_url,
+
+      -- Job
+      j.title AS j_title,
+      j.id AS j_id,
+    
+      -- Hiring Manager Profile
+      hm.first_name AS hm_first_name,
+      hm.last_name AS hm_last_name,
+
+      -- Hiring Manager User Details
+      u.id AS u_id,
+      u.email_address AS u_email_address,
+
+      -- Tenant Details
+      t.subdomain AS t_subdomain,
+
+      -- Company Icon
+      c.logo AS company_logo,
+
+      -- email_template_signature
+      ets.template AS email_template_signature
+      
+      FROM public.endorsement_email_token AS et
+      INNER JOIN public.endorser AS e ON e.id = et.endorser_id
+      INNER JOIN public.application AS a ON a.id = e.application_id
+      INNER JOIN public.profile AS p ON p.id = a.applicant_id
+      INNER JOIN public.job AS j ON j.id = a.job_id
+      INNER JOIN public.profile AS hm ON hm.id = j.hiring_manager_id
+      INNER JOIN public.users AS u ON u.id = hm.user_id
+      INNER JOIN public.tenant AS t ON t.id = u.tenant_id
+      INNER JOIN public.company AS c ON c.id = t.company_id
+      INNER JOIN public.email_template_signature AS ets ON ets.id = t.email_template_signature_id
+      WHERE et.token = '${token}'`;
+
+      let endorser: any = (await sequelize.query(endorserQuery))[0];
+      
+      // Get the iamge URL 
+      endorser[0].company_logo = await getImage(endorser[0].company_logo);
+      
+      // Send the email
+      sendEndoresementFeedbackMail(endorser[0]);
+
+      this.sendOkResponse(
+        res,
+        "Endorsement mail sent successfully.",
+        endorser
+      );
+    } catch (err) {
+      console.log("err: ", err);
+      if (err instanceof Error) {
+        this.sendBadRequestResponse(res, err.message);
+      }
+    }
+  };
+
+}
+
+function getImage(originalUrl: string): string {
+  if (!originalUrl) return ''; // Return an empty string if the input URL is invalid
+  // Extract the part after 'SaaS/' and replace the path with the correct format
+  const logoPath = originalUrl
+    .substring(originalUrl.indexOf('SaaS/') + 5)
+    .replace('/', '-');
+  // Return the transformed URL
+  return `${process.env.API_STAGING_URL}/api/v1/Public/Uploads/COMPANY_LOGO/${logoPath}`;
 }

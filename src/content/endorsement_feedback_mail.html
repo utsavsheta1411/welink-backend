@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Application Reviewed</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+      background-color: #f7f7f7;
+    }
+
+    .email-container {
+      background-color: #ffffff;
+      max-width: 600px;
+      margin: auto;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    }
+
+    p {
+      margin-bottom: 16px;
+    }
+
+    ol {
+      padding-left: 20px;
+      margin-bottom: 16px;
+    }
+
+    a {
+      color: #1a73e8;
+      text-decoration: none;
+      word-break: break-word;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    img {
+      border-radius: 6px;
+    }
+
+    .footer {
+      margin-top: 30px;
+      font-size: 13px;
+      color: #777;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="email-container">
+
+    <p style="text-align: center;-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%; margin-bottom: 30px;">
+      <img
+        src="https://welinktalent-production.s3-ap-southeast-1.amazonaws.com/tenant/77c97464-8677-4d92-9bee-3d4293cc4b14/company/Cr%C3%A9dit%20Industriel%20et%20Commercial%20(CIC)/5542/logo.png"
+        style="-ms-interpolation-mode: bicubic;border: 0;height: auto;line-height: 100%;outline: none;text-decoration: none;width: 50%;">
+    </p>
+
+    <p>Dear {applicant_firstName},</p>
+
+    <p>
+      <strong>{endorser_firstName} {endorser_lastName}</strong> just reviewed your application to the following role:
+      <strong>{job_title}</strong>.
+    </p>
+
+    <p>Your reference is now filled and you can progress to applying to the role by sharing it with the hiring manager.
+    </p>
+
+    <p><strong>Next Steps:</strong></p>
+    <ol>
+      <li>Read your endorsement.</li>
+      <li>Choose endorser 1, endorser 2 or both, to be attached to your application</li>
+      <li>Apply</li>
+    </ol>
+
+    <p>Below is a link to your application and reference:</p>
+
+    <p>
+      Please click the link below or paste it into your browser to get started:<br>
+      <a href="{job_link}">{job_link}</a>
+    </p>
+
+    <p>Thank you for your trust.</p>
+
+    <p>
+      Should you have any questions, please contact
+      <strong>{hiringManager_firstName} {hiringManager_lastName}</strong> at
+      <strong>{hiringManager_user_emailAddress}</strong>.
+    </p>
+
+    <p><strong>{tenant_subdomain}</strong></p>
+
+    <p>
+      <img src="{company_icon}" alt="company icon" style="-ms-interpolation-mode: bicubic;border: 0;height: auto;line-height: 100%;outline: none;text-decoration: none;width: 50%;">
+    </p>
+
+    <div class="footer">
+      {email_template_signature}
+    </div>
+  </div>
+</body>
+
+</html>

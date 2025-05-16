@@ -14,5 +14,6 @@ export class EndorserRoutes {
     this.router.get("/endorsements", this.endorserController.getEndorsementList);
     this.router.get("/endorsements/:endorserId", this.endorserController.getEndorsementDetails);
     this.router.get("/endorsement-mail/:applicationId", this.endorserController.sendEndorsementEmail);
+    this.router.get("/endorsement-feedback-mail", this.endorserController.sendEndorsementFeedbackEmail);
   }
 }
