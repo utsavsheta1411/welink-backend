@@ -290,6 +290,12 @@ export class UserController extends HttpStatus {
         );
         const access_token = 'test-token';
         const redirect_url = `${env.REDIRECT_URL}?token=${access_token}&email=${objParams.emailAddress}`;
+         const insertApplicantProfileQuery = `INSERT INTO "applicant_profile" (
+            "id", "picture_url", "summary", "hobbies", "headline", "linked_in_id")
+            VALUES ('${data.id}', null, null, null, null, null);`;
+          await sequelize.query(insertApplicantProfileQuery, {
+            type: "insert",
+          });
         // send magic link to email
         await axios.post(
           `https://${env.DOMAIN}/passwordless/start`,

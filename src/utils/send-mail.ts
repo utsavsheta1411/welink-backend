@@ -91,7 +91,7 @@ const sendEndoresementFeedbackMail = (data: any) => {
   html = html.replace(/{email_template_signature}/g, email_template_signature);
 
   const mail = {
-    to: data.e_email_address,
+    to: data.applicant_email_address,
     from: "ReturnOnTalent <hello@returnontalent.io>",
     subject: "Welcome to ReturnOnTalent",
     html

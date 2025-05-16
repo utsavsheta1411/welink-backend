@@ -734,12 +734,16 @@ export class EndorserController extends HttpStatus {
       c.logo AS company_logo,
 
       -- email_template_signature
-      ets.template AS email_template_signature
+      ets.template AS email_template_signature,
+
+      -- applicant details
+      au.email_address as applicant_email_address
       
       FROM public.endorsement_email_token AS et
       INNER JOIN public.endorser AS e ON e.id = et.endorser_id
       INNER JOIN public.application AS a ON a.id = e.application_id
       INNER JOIN public.profile AS p ON p.id = a.applicant_id
+      INNER JOIN public.users AS au ON au.id = p.user_id
       INNER JOIN public.job AS j ON j.id = a.job_id
       INNER JOIN public.profile AS hm ON hm.id = j.hiring_manager_id
       INNER JOIN public.users AS u ON u.id = hm.user_id
